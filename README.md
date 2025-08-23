@@ -1,0 +1,2 @@
+# Oregano
+Prestashop theme
