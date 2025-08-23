@@ -31,6 +31,8 @@
   <div class="{$headerBottomName}">
     <div class="container-md {$headerBottomName}__container">
       <div class="row gx-2 align-items-stretch {$headerBottomName}__row">
+        {hook h='displayTop'}
+        
         <div class="d-flex align-items-center col-auto logo order-xl-1 ms-lg-0 ms-2 me-lg-0 me-auto">
           {if $shop.logo_details}
             {if $page.page_name == 'index'}<h1 class="{$headerBottomName}__h1 mb-0">{/if}
@@ -55,7 +57,7 @@
           </div>
         </div>
 
-        {hook h='displayTop'}
+        
 
         <div id="_mobile_user_info" class="d-md-none d-flex col-auto">
           {* JUST PLACEHOLDER FOR RESPONSIVE COMPONENT TO LOAD REAL ONE *}
