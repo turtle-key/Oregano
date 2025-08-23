@@ -70,8 +70,9 @@ global_settings:
         - ps_currencyselector
         - ps_customersignin
         - ps_shoppingcart
-      displayTop:
+      displayTopLeft:
         - ps_mainmenu
+      displayTopRight:
         - ps_searchbar
       displayHome:
         - ps_imageslider
