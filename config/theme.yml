@@ -1,10 +1,10 @@
-name: hummingbird
-display_name: Hummingbird
-version: 1.0.1
+name: oregano
+display_name: Oregano
+version: 1.0
 author:
-  name: "PrestaShop Team and Contributors"
-  email: "pub@prestashop.com"
-  url: "https://www.prestashop-project.org/"
+  name: "Ghețu Mihai-Eduard"
+  email: "ghetumihaieduard@gmail.com"
+  url: "https://www.mihai.sh"
 
 meta:
   compatibility:
