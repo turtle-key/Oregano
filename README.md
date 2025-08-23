@@ -1,4 +1,4 @@
-# Hummingbird theme
+# Oregano theme
 
 This is a PrestaShop's theme we are working on. Please, if you work on this theme, use the `8.1.x` branch of PrestaShop to make sure this theme is compatible with the latest `8.1.x` version.
 
