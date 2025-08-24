@@ -63,17 +63,14 @@ global_settings:
         - psgdpr
       displayMyAccountBlock:
         - blockwishlist
-      displayNav1:
-        - ps_contactinfo
-      displayNav2:
-        - ps_languageselector
-        - ps_currencyselector
-        - ps_customersignin
-        - ps_shoppingcart
       displayTopLeft:
         - ps_mainmenu
       displayTopRight:
         - ps_searchbar
+        - ps_languageselector
+        - ps_currencyselector
+        - ps_customersignin
+        - ps_shoppingcart
       displayHome:
         - ps_imageslider
         - ps_customtext
