@@ -1,7 +1,7 @@
 # Oregano Theme
 
 Oregano is a custom PrestaShop theme based on the [default PrestaShop theme](https://github.com/PrestaShop/hummingbird?utm_source=chatgpt.com).  
-It is designed for PrestaShop `8.1.x`, so please make sure you are using that branch to ensure compatibility.
+It is designed for PrestaShop `9.0.x`, so please make sure you are using that branch to ensure compatibility.
 
   <p align="center">
     <img src="preview.png" alt="Oregano theme preview"/>
