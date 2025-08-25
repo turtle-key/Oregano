@@ -2,7 +2,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *}
-{$headerTopName = 'header-top'}
 {$headerBottomName = 'header-bottom'}
 
 {block name='header_banner'}
@@ -11,21 +10,6 @@
   </div>
 {/block}
 
-{block name='header_nav'}
-  <nav class="{$headerTopName}">
-    <div class="container-md">
-      <div class="{$headerTopName}-desktop d-none d-md-flex row">
-        <div class="{$headerTopName}__left col-md-5">
-          {hook h='displayNav1'}
-        </div>
-
-        <div class="{$headerTopName}__right col-md-7">
-          {hook h='displayNav2'}
-        </div>
-      </div>
-    </div>
-  </nav>
-{/block}
 
 {block name='header_bottom'}
   <div class="{$headerBottomName}">

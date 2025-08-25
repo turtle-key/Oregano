@@ -71,23 +71,16 @@ $component-name: search;
 
     &__dropdown {
       position: absolute;
-      top: calc(100% + 1rem);
-      right: 0;
+      top: calc(100% + 0.25rem);
+      right: inherit;
+      left: -1rem;
       width: 100vw;
-      max-width: 30rem;
+      max-width: inherit;
       overflow: hidden;
       background: var(--bs-white);
       border: 1px solid $input-border-color;
-      border-radius: var(--bs-border-radius-sm);
+      border-radius: 0 0 8px 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-      @include media-breakpoint-down(md) {
-        top: calc(100% + 0.25rem);
-        right: inherit;
-        left: -1rem;
-        max-width: inherit;
-        border-radius: 0 0 8px 8px;
-      }
     }
 
     &__results {
