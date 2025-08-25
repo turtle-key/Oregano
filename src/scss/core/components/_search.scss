@@ -10,6 +10,7 @@ $component-name: search;
   &__link {
     display: flex;
     align-items: center;
+    gap: 0.75rem;
     padding: 0.25rem 0.5rem;
     border-radius: $border-radius;
 
@@ -20,7 +21,6 @@ $component-name: search;
 
   &__name {
     margin-bottom: 0;
-    margin-left: 1rem;
     font-size: 1rem;
     color: var(--bs-gray-800);
   }
@@ -29,6 +29,22 @@ $component-name: search;
     max-width: 4rem;
     height: auto;
     border-radius: 8px;
+    flex: 0 0 auto;
+  }
+
+  // Added to mimic bonsearch miniature details
+  &__price {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--bs-gray-900);
+    white-space: nowrap;
+  }
+
+  &__reference {
+    margin-left: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--bs-gray-600);
+    white-space: nowrap;
   }
 }
 
@@ -38,7 +54,6 @@ $component-name: search;
     height: auto;
     border-bottom: 0;
 
-    // stylelint-disable-next-line
     #search_widget {
       margin-bottom: 0;
     }
@@ -62,7 +77,6 @@ $component-name: search;
 
   &-widgets {
     position: relative;
-    // stylelint-disable-next-line
     overflow: visible !important;
 
     @include media-breakpoint-down(md) {
@@ -87,14 +101,14 @@ $component-name: search;
       max-height: 20rem;
       padding: 0.5rem 1.5rem 0.5rem 0.5rem;
       margin: 0;
-      overflow-y: scroll;
+      overflow-y: auto;
+      list-style: none;
     }
   }
 }
 
 .header__bottom,
 .#{$component-name}__offcanvas {
-  // stylelint-disable-next-line, selector-id-pattern
   #search_widget {
     min-width: 20rem;
     overflow: visible;

@@ -44,6 +44,7 @@
     <a class="search-result__link" href="">
       <img src="" alt="" class="search-result__image">
       <p class="search-result__name"></p>
+      <span class="search-result__price"></span>
     </a>
   </li>
 </template>
