@@ -15,10 +15,27 @@ const initSearchbar = (): void => {
 
   const cancelBtn = searchCanvas?.querySelector<HTMLElement>('[data-bs-dismiss="offcanvas"]') || null;
 
+  // Bootstrap Offcanvas helper
+  const Offcanvas = (window as any).bootstrap?.Offcanvas;
+  const getCanvas = () => (Offcanvas && searchCanvas ? Offcanvas.getOrCreateInstance(searchCanvas) : null);
+
+  // Header trigger(s) that toggle this offcanvas (icon in the header)
+  const headerTriggers = Array.from(
+    document.querySelectorAll<HTMLElement>(
+      `[data-bs-toggle="offcanvas"][data-bs-target="${SearchBarMap.searchCanvas}"],` +
+      `[data-bs-toggle="offcanvas"][href="${SearchBarMap.searchCanvas}"]`
+    )
+  );
+
   const hideDropdown = (): void => {
     if (!searchDropdown || !searchResults) return;
     searchResults.innerHTML = '';
     searchDropdown.classList.add('d-none');
+  };
+
+  const removeBackdropAndDropdown = (): void => {
+    document.body.classList.remove('is-search-open');
+    hideDropdown();
   };
 
   const focusSearchAtEnd = (): void => {
@@ -26,7 +43,6 @@ const initSearchbar = (): void => {
     const len = (searchInput.value || '').length;
     // Defer to ensure offcanvas is fully painted
     requestAnimationFrame(() => {
-      // preventScroll keeps the page from jumping
       try {
         (searchInput as any).focus({ preventScroll: true });
       } catch {
@@ -43,39 +59,95 @@ const initSearchbar = (): void => {
     });
   };
 
+  // Action that mimics pressing the Cancel button (Shop.Theme.Global cancel)
+  const closeViaCancelAction = (): void => {
+    if (cancelBtn) {
+      cancelBtn.click(); // let Bootstrap handle dismissal the same way as the real cancel
+    } else {
+      try {
+        getCanvas()?.hide();
+      } catch {
+        // no-op
+      }
+    }
+  };
+
+  // Focus input when clicking anywhere in the widget
   searchWidget?.addEventListener('click', () => {
     searchInput?.focus();
   });
 
-  // Submit only if there is input; backdrop handled separately
+  // Submit only if there is input; overlay/backdrop lifecycle handled by offcanvas events
   searchIcon?.addEventListener('click', () => {
     if (searchInput?.value) {
       searchInput.form?.submit();
     }
   });
 
-  // Backdrop lifecycle: add on open; only Cancel removes it
+  // Backdrop lifecycle: add on open
   (searchCanvas as any)?.addEventListener('shown.bs.offcanvas', () => {
     document.body.classList.add('is-search-open');
-    focusSearchAtEnd(); // Accessibility: autofocus with caret at the end
+    bindGlobalCloseHandlers();
+    focusSearchAtEnd(); // autofocus with caret at the end
   });
 
-  // Only the Cancel button hides the backdrop
-  cancelBtn?.addEventListener('click', () => {
-    document.body.classList.remove('is-search-open');
-    hideDropdown();
+  // Always remove custom backdrop when the offcanvas fully hides (no matter how it closes)
+  (searchCanvas as any)?.addEventListener('hidden.bs.offcanvas', () => {
+    unbindGlobalCloseHandlers();
+    removeBackdropAndDropdown();
   });
 
-  let outsideClickBound = false;
-  const bindOutsideClick = (): void => {
-    if (outsideClickBound) return;
-    outsideClickBound = true;
-    window.addEventListener('click', (e: Event) => {
-      const t = e.target as Node | null;
-      if (t && searchWidget && !searchWidget.contains(t)) {
-        hideDropdown(); // do not remove backdrop here
+  // Make the header trigger behave like pressing the "Cancel" button when the panel is already open
+  headerTriggers.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const isOpen = !!searchCanvas?.classList.contains('show');
+      if (isOpen) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        closeViaCancelAction();
       }
+      // If not open, let Bootstrap open it normally
     });
+  });
+
+  // Cancel button: let Bootstrap handle dismissal; cleanup runs on hidden.bs.offcanvas
+  cancelBtn?.addEventListener('click', () => {
+    // intentionally empty; do not manually touch backdrop here
+  });
+
+  // Close the entire overlay on Escape or clicking anywhere outside the offcanvas
+  let globalHandlersBound = false;
+
+  const onDocKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && searchCanvas?.classList.contains('show')) {
+      // don't block default page behavior beyond closing the overlay
+      closeViaCancelAction();
+    }
+  };
+
+  const onDocClick = (e: MouseEvent) => {
+    const t = e.target as Node | null;
+    if (!t || !searchCanvas) return;
+    if (searchCanvas.classList.contains('show') && !searchCanvas.contains(t)) {
+      // Click outside the offcanvas: close it like the Cancel button
+      closeViaCancelAction();
+      // Do NOT preventDefault; allow normal link clicks to continue
+    }
+  };
+
+  const bindGlobalCloseHandlers = () => {
+    if (globalHandlersBound) return;
+    globalHandlersBound = true;
+    // Use capture so we can react before other handlers if needed, but still allow navigation
+    document.addEventListener('keydown', onDocKeydown, true);
+    document.addEventListener('click', onDocClick, true);
+  };
+
+  const unbindGlobalCloseHandlers = () => {
+    if (!globalHandlersBound) return;
+    globalHandlersBound = false;
+    document.removeEventListener('keydown', onDocKeydown, true);
+    document.removeEventListener('click', onDocClick, true);
   };
 
   let debounceId: number | undefined;
@@ -193,19 +265,20 @@ const initSearchbar = (): void => {
       });
 
       searchDropdown.classList.remove('d-none');
-      bindOutsideClick();
+      // We now close the whole overlay on outside click, so a dedicated dropdown outside click is unnecessary.
+      // Keeping the dropdown simple avoids conflicting behaviors.
     } else {
-      hideDropdown(); // backdrop remains
+      hideDropdown(); // backdrop remains until offcanvas closes
     }
   };
 
   if (searchWidget && searchInput && searchResults && searchDropdown) {
-    // Do NOT hide backdrop on focus/empty; only hide dropdown when empty
+    // Clear dropdown via native search event
     searchInput.addEventListener('search', (() => {
       if (!searchInput?.value || !searchInput.value.trim()) hideDropdown();
     }) as EventListener);
 
-    // Esc only hides dropdown; backdrop remains until Cancel is pressed
+    // Only hide dropdown on Escape; full overlay closes via document Escape handler
     searchInput.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape') hideDropdown();
     });
