@@ -2,11 +2,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { searchProduct, Result } from '@services/search';
+import {searchProduct, Result} from '@services/search';
 
-const initSearchbar = () => {
-  const { Theme } = window as any;
-  const { searchBar: SearchBarMap } = Theme.selectors;
+const initSearchbar = (): void => {
+  const {Theme} = window as any;
+  const {searchBar: SearchBarMap} = Theme.selectors;
 
   const searchCanvas = document.querySelector<HTMLElement>(SearchBarMap.searchCanvas);
   const searchWidget = document.querySelector<HTMLElement>(SearchBarMap.searchWidget);
@@ -16,6 +16,13 @@ const initSearchbar = () => {
   const searchInput = document.querySelector<HTMLInputElement>(SearchBarMap.searchInput);
   const searchIcon = document.querySelector<HTMLElement>(SearchBarMap.searchIcon);
   const searchUrl = searchWidget?.dataset.searchControllerUrl as string | undefined;
+
+  // Helper to fully hide popup
+  const hideDropdown = (): void => {
+    if (!searchDropdown || !searchResults) return;
+    searchResults.innerHTML = '';
+    searchDropdown.classList.add('d-none');
+  };
 
   // Larger click area focuses input
   searchWidget?.addEventListener('click', () => {
@@ -30,24 +37,50 @@ const initSearchbar = () => {
   });
 
   // Reset dropdown when offcanvas hides
-  searchCanvas?.addEventListener('hidden.bs.offcanvas', () => {
-    if (searchDropdown) {
-      searchDropdown.innerHTML = '';
-      searchDropdown.classList.add('d-none');
-    }
+  (searchCanvas as any)?.addEventListener('hidden.bs.offcanvas', () => {
+    hideDropdown();
   });
 
   // Close dropdown on outside click (register once)
   let outsideClickBound = false;
-  const bindOutsideClick = () => {
+  const bindOutsideClick = (): void => {
     if (outsideClickBound) return;
     outsideClickBound = true;
     window.addEventListener('click', (e: Event) => {
-      const t = e.target as Node;
-      if (searchWidget && !searchWidget.contains(t)) {
-        searchDropdown?.classList.add('d-none');
+      const t = e.target as Node | null;
+
+      if (t && searchWidget && !searchWidget.contains(t)) {
+        hideDropdown();
       }
     });
+  };
+
+  // Debounce + request guard to avoid race conditions that can break rendering
+  let debounceId: number | undefined;
+  let lastRequestId = 0;
+
+  const getPriceText = (p: Result): string => {
+    const anyP = p as any;
+
+    return (
+      anyP?.price?.amount_formatted
+      || anyP?.price?.amount_with_tax_formatted
+      || anyP?.price?.formatted
+      || anyP?.prices?.price
+      || anyP?.price
+      || ''
+    ) as string;
+  };
+
+  const getImageUrl = (p: Result): string => {
+    const anyP = p as any;
+
+    // Prefer small url; fallback to bySize.small_default if provided by core
+    return (
+      anyP?.cover?.small?.url
+      || anyP?.cover?.bySize?.small_default?.url
+      || '/img/p/en-default-medium_default.jpg'
+    ) as string;
   };
 
   const buildResultItem = (p: Result): Node => {
@@ -59,27 +92,18 @@ const initSearchbar = () => {
       const link = frag.querySelector<HTMLAnchorElement>('a') ?? document.createElement('a');
       const img = frag.querySelector<HTMLImageElement>('img') ?? document.createElement('img');
       const name = frag.querySelector<HTMLParagraphElement>('p.search-result__name') ?? document.createElement('p');
-
-      // Optional placeholders (if you extend your template)
       let price = frag.querySelector<HTMLSpanElement>('.search-result__price') || null;
 
       link.href = p.canonical_url || '#';
       name.textContent = p.name || '';
 
-      // Image
-      img.src = '/img/p/en-default-medium_default.jpg';
-      img.alt = p.name;
-      if (p?.cover?.small?.url) {
-        img.src = p.cover.small.url;
-      } 
+      // Image (keep your previous default url behavior with safer fallback)
+      img.src = getImageUrl(p);
+      img.alt = p.name || '';
+      img.referrerPolicy = 'no-referrer';
+
       // Price (optional fields, shown only if available)
-      const priceText =
-        (p as any)?.price?.amount_formatted ||
-        (p as any)?.price?.amount_with_tax_formatted ||
-        (p as any)?.price?.formatted ||
-        (p as any)?.prices?.price ||
-        (p as any)?.price ||
-        '';
+      const priceText = getPriceText(p);
 
       if (!price && priceText) {
         price = document.createElement('span');
@@ -122,11 +146,9 @@ const initSearchbar = () => {
 
     const img = document.createElement('img');
     img.className = 'search-result__image';
-    img.src = '/img/p/en-default-medium_default.jpg';
+    img.src = getImageUrl(p);
     img.alt = p.name || '';
-    if (p?.cover?.small?.url) {
-      img.src = p.cover.small.url;
-    }
+    img.referrerPolicy = 'no-referrer';
 
     const title = document.createElement('p');
     title.className = 'search-result__name';
@@ -134,13 +156,8 @@ const initSearchbar = () => {
 
     const priceEl = document.createElement('span');
     priceEl.className = 'search-result__price';
-    const priceText =
-      (p as any)?.price?.amount_formatted ||
-      (p as any)?.price?.amount_with_tax_formatted ||
-      (p as any)?.price?.formatted ||
-      (p as any)?.prices?.price ||
-      (p as any)?.price ||
-      '';
+    const priceText = getPriceText(p);
+
     if (priceText) {
       priceEl.textContent = String(priceText);
     }
@@ -152,34 +169,73 @@ const initSearchbar = () => {
     return li;
   };
 
+  const renderResults = (products: Result[]): void => {
+    if (!searchResults || !searchDropdown) return;
+
+    if (products?.length) {
+      searchResults.innerHTML = '';
+      const limited = products.slice(0, 4);
+      limited.forEach((p: Result) => {
+        const item = buildResultItem(p);
+        searchResults.append(item);
+      });
+
+      searchDropdown.classList.remove('d-none');
+      bindOutsideClick();
+    } else {
+      hideDropdown();
+    }
+  };
+
   if (searchWidget && searchInput && searchResults && searchDropdown) {
-    // Use 'input' for reactive updates
-    searchInput.addEventListener('input', async () => {
+    // Always hide popup when field is empty
+    const hideIfEmpty = (): void => {
+      if (!searchInput?.value || !searchInput.value.trim()) {
+        hideDropdown();
+      }
+    };
+
+    // Hide on focus if empty (prevents showing stale results)
+    searchInput.addEventListener('focus', hideIfEmpty);
+
+    // Hide on "search" event (triggered by native clear X in some browsers)
+    searchInput.addEventListener('search', hideIfEmpty as EventListener);
+
+    // Hide on Escape
+    searchInput.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') hideDropdown();
+    });
+
+    // Reactive updates with debounce and request guard
+    searchInput.addEventListener('input', () => {
       if (!searchUrl) return;
 
       const q = searchInput.value || '';
+
       // Empty query: clear dropdown
       if (!q.trim()) {
-        searchResults.innerHTML = '';
-        searchDropdown.classList.add('d-none');
+        if (debounceId) window.clearTimeout(debounceId);
+        renderResults([]);
         return;
       }
 
-      const products: Result[] = await searchProduct(searchUrl, q, 10);
+      if (debounceId) window.clearTimeout(debounceId);
+      debounceId = window.setTimeout(async () => {
+        const requestId = ++lastRequestId;
+        try {
+          const products: Result[] = await searchProduct(searchUrl, q, 4);
 
-      if (products && products.length > 0) {
-        searchResults.innerHTML = '';
-        products.forEach((p: Result) => {
-          const item = buildResultItem(p);
-          searchResults.append(item);
-        });
-
-        searchDropdown.classList.remove('d-none');
-        bindOutsideClick();
-      } else {
-        searchResults.innerHTML = '';
-        searchDropdown.classList.add('d-none');
-      }
+          // Ignore stale responses
+          if (requestId !== lastRequestId) return;
+          renderResults(Array.isArray(products) ? products : []);
+        } catch (err) {
+          // On any error, hide dropdown rather than breaking UI
+          console.warn('Search error:', err);
+          if (requestId === lastRequestId) {
+            renderResults([]);
+          }
+        }
+      }, 180);
     });
   }
 };
