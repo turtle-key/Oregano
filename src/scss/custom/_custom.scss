@@ -9,3 +9,9 @@
 
 // Pages
 @import "pages";
+body #header #search_widget {
+  float: none !important;  // stronger than just #search_widget
+}
+body {
+  border: 5px solid red !important;
+}

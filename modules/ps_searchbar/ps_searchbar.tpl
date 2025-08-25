@@ -23,7 +23,7 @@
  * International Registered Trademark & Property of PrestaShop SA
  *}
 
-<div id="search" class="order-2 ms-auto col-auto d-flex align-items-center">
+<div id="search" class="search__container">
   <div id="search_widget" class="search-widgets js-search-widget" data-search-controller-url="{$search_controller_url}">
     <form method="get" action="{$search_controller_url}">
       <input type="hidden" name="controller" value="search">
