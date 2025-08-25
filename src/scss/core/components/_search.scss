@@ -8,14 +8,27 @@ $component-name: search;
   }
 
   &__link {
-    display: flex;
-    gap: 0.75rem; // gap before align-items (lint)
+    display: grid;
+    grid-template-columns: 3.25rem 1fr auto;
+    gap: 0.75rem; // keep gap before align-items (lint)
     align-items: center;
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem 0.75rem;
     text-decoration: none;
+    color: inherit;
+    background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
+    border: 1px solid transparent;
     border-radius: $border-radius;
+    transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
 
     &:hover {
+      background: var(--bs-gray-100);
+      border-color: var(--bs-gray-200);
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 0;
+      border-color: var(--bs-primary);
       background: var(--bs-gray-100);
     }
   }
@@ -23,21 +36,43 @@ $component-name: search;
   &__name {
     margin-bottom: 0;
     font-size: 1rem;
-    color: var(--bs-gray-800);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+    color: var(--bs-gray-900);
+    overflow: hidden;
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2; // clamp to two lines
+    -webkit-box-orient: vertical;
   }
 
   &__image {
     flex: 0 0 auto; // flex before border-radius (lint)
-    max-width: 4rem;
-    height: auto;
+    width: 3.25rem;
+    height: 3.25rem;
+    object-fit: cover;
     background: var(--bs-gray-200);
-    border-radius: 8px;
+    border-radius: 10px;
+    transform: translateZ(0);
+    transition: transform 0.2s ease;
+  }
+
+  // Subtle image pop on hover
+  &__link:hover &__image {
+    transform: scale(1.03);
   }
 
   &__price {
     margin-left: auto;
-    font-weight: 600;
+    align-self: center;
+    padding: 0.25rem 0.5rem;
+    font-weight: 700;
+    font-size: 0.95rem;
     color: var(--bs-gray-900);
+    background: var(--bs-gray-100);
+    border: 1px solid var(--bs-gray-200);
+    border-radius: 999px;
     white-space: nowrap;
   }
 }
@@ -72,7 +107,7 @@ $component-name: search;
 
   &-widgets {
     position: relative;
-    overflow: visible; // removed !important (lint)
+    overflow: visible; // no !important (lint)
 
     @include media-breakpoint-down(md) {
       max-width: inherit;
@@ -91,16 +126,20 @@ $component-name: search;
       background: var(--bs-white);
       border: 1px solid $input-border-color;
       border-top: 0; // remove top border
-      border-radius: 0 0 8px 8px;
+      border-radius: 0 0 12px 12px; // slightly rounder for a softer feel
       box-shadow: none; // remove box shadow
     }
 
     &__results {
       // Show only the first four items; no scrollbars
-      padding: 0.5rem 1.5rem 0.5rem 0.5rem;
+      padding: 0.5rem 0.75rem;
       margin: 0;
       overflow: visible;
       list-style: none;
+
+      > li {
+        margin: 0.25rem 0;
+      }
 
       > li:nth-child(n + 5) {
         display: none;
