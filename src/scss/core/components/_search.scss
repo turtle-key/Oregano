@@ -10,15 +10,27 @@ $component-name: search;
   &__link {
     display: grid;
     grid-template-columns: 3.25rem 1fr auto;
-    gap: 0.75rem; // keep gap before align-items (lint)
+    gap: 0.75rem;
     align-items: center;
-    padding: 0.5rem 0.75rem;
+    padding: 0.625rem 0.875rem;
     text-decoration: none;
     color: inherit;
-    background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
-    border: 1px solid transparent;
+    background: #fff;
+    border: 1px solid var(--bs-gray-300);
     border-radius: $border-radius;
     transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 10%;
+      bottom: 10%;
+      width: 4px;
+      background: #A2BB06;
+      border-radius: 4px;
+    }
 
     &:hover {
       background: var(--bs-gray-100);
@@ -43,12 +55,12 @@ $component-name: search;
     overflow: hidden;
     display: -webkit-box;
     line-clamp: 2;
-    -webkit-line-clamp: 2; // clamp to two lines
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
 
   &__image {
-    flex: 0 0 auto; // flex before border-radius (lint)
+    flex: 0 0 auto;
     width: 3.25rem;
     height: 3.25rem;
     object-fit: cover;
@@ -58,7 +70,6 @@ $component-name: search;
     transition: transform 0.2s ease;
   }
 
-  // Subtle image pop on hover
   &__link:hover &__image {
     transform: scale(1.03);
   }
@@ -83,7 +94,6 @@ $component-name: search;
     height: auto;
     border-bottom: 0;
 
-    // stylelint-disable-next-line selector-id-pattern
     #search_widget {
       margin-bottom: 0;
     }
@@ -107,7 +117,7 @@ $component-name: search;
 
   &-widgets {
     position: relative;
-    overflow: visible; // no !important (lint)
+    overflow: visible;
 
     @include media-breakpoint-down(md) {
       max-width: inherit;
@@ -115,7 +125,7 @@ $component-name: search;
 
     &__dropdown {
       position: absolute;
-      top: calc(100% + 0.39rem); // gap between search bar and popup
+      top: calc(100% + 0.39rem);
       right: inherit;
       left: -1rem;
       width: 100vw;
@@ -125,13 +135,13 @@ $component-name: search;
       overflow: hidden;
       background: var(--bs-white);
       border: 1px solid $input-border-color;
-      border-top: 0; // remove top border
-      border-radius: 0 0 12px 12px; // slightly rounder for a softer feel
-      box-shadow: none; // remove box shadow
+      border-top: 0;
+      border-radius: 0 0 12px 12px;
+      box-shadow: none;
+      z-index: 101; // above backdrop (100)
     }
 
     &__results {
-      // Show only the first four items; no scrollbars
       padding: 0.5rem 0.75rem;
       margin: 0;
       overflow: visible;
@@ -150,7 +160,6 @@ $component-name: search;
 
 .header__bottom,
 .#{$component-name}__offcanvas {
-  // stylelint-disable-next-line selector-id-pattern
   #search_widget {
     min-width: 20rem;
     overflow: visible;
@@ -186,4 +195,14 @@ $component-name: search;
       color: var(--bs-gray-700);
     }
   }
+}
+
+/* Backdrop: keep behind dropdown/offcanvas, only hidden by Cancel button */
+body.is-search-open::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-color: rgba(var(--brand-offaccent-rgb, 0, 0, 0), 0.5);
+  z-index: 100;
+  pointer-events: auto;
 }

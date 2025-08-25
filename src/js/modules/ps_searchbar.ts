@@ -1,7 +1,3 @@
-/**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 import {searchProduct, Result} from '@services/search';
 
 const initSearchbar = (): void => {
@@ -17,74 +13,71 @@ const initSearchbar = (): void => {
   const searchIcon = document.querySelector<HTMLElement>(SearchBarMap.searchIcon);
   const searchUrl = searchWidget?.dataset.searchControllerUrl as string | undefined;
 
-  // Helper to fully hide popup
+  const cancelBtn = searchCanvas?.querySelector<HTMLElement>('[data-bs-dismiss="offcanvas"]') || null;
+
   const hideDropdown = (): void => {
     if (!searchDropdown || !searchResults) return;
     searchResults.innerHTML = '';
     searchDropdown.classList.add('d-none');
   };
 
-  // Larger click area focuses input
   searchWidget?.addEventListener('click', () => {
     searchInput?.focus();
   });
 
-  // Submit on icon click only if there is input
   searchIcon?.addEventListener('click', () => {
     if (searchInput?.value) {
       searchInput.form?.submit();
     }
   });
 
-  // Reset dropdown when offcanvas hides
-  (searchCanvas as any)?.addEventListener('hidden.bs.offcanvas', () => {
+  (searchCanvas as any)?.addEventListener('shown.bs.offcanvas', () => {
+    document.body.classList.add('is-search-open');
+  });
+
+  // Only the cancel button hides the backdrop
+  cancelBtn?.addEventListener('click', () => {
+    document.body.classList.remove('is-search-open');
     hideDropdown();
   });
 
-  // Close dropdown on outside click (register once)
   let outsideClickBound = false;
   const bindOutsideClick = (): void => {
     if (outsideClickBound) return;
     outsideClickBound = true;
     window.addEventListener('click', (e: Event) => {
       const t = e.target as Node | null;
-
       if (t && searchWidget && !searchWidget.contains(t)) {
-        hideDropdown();
+        hideDropdown(); // do not touch backdrop here
       }
     });
   };
 
-  // Debounce + request guard to avoid race conditions that can break rendering
   let debounceId: number | undefined;
   let lastRequestId = 0;
 
   const getPriceText = (p: Result): string => {
     const anyP = p as any;
-
     return (
-      anyP?.price?.amount_formatted
-      || anyP?.price?.amount_with_tax_formatted
-      || anyP?.price?.formatted
-      || anyP?.prices?.price
-      || anyP?.price
-      || ''
+      anyP?.price?.amount_formatted ||
+      anyP?.price?.amount_with_tax_formatted ||
+      anyP?.price?.formatted ||
+      anyP?.prices?.price ||
+      anyP?.price ||
+      ''
     ) as string;
   };
 
   const getImageUrl = (p: Result): string => {
     const anyP = p as any;
-
-    // Prefer small url; fallback to bySize.small_default if provided by core
     return (
-      anyP?.cover?.small?.url
-      || anyP?.cover?.bySize?.small_default?.url
-      || '/img/p/en-default-medium_default.jpg'
+      anyP?.cover?.small?.url ||
+      anyP?.cover?.bySize?.small_default?.url ||
+      '/img/p/en-default-medium_default.jpg'
     ) as string;
   };
 
   const buildResultItem = (p: Result): Node => {
-    // Attempt to use template if present, else create manually
     if (searchTemplate?.content) {
       const frag = searchTemplate.content.cloneNode(true) as DocumentFragment;
 
@@ -97,12 +90,10 @@ const initSearchbar = (): void => {
       link.href = p.canonical_url || '#';
       name.textContent = p.name || '';
 
-      // Image (keep your previous default url behavior with safer fallback)
       img.src = getImageUrl(p);
       img.alt = p.name || '';
       img.referrerPolicy = 'no-referrer';
 
-      // Price (optional fields, shown only if available)
       const priceText = getPriceText(p);
 
       if (!price && priceText) {
@@ -118,13 +109,11 @@ const initSearchbar = (): void => {
         }
       }
 
-      // Ensure classes exist when building manually
       root.classList.add('search-result');
       link.classList.add('search-result__link');
       img.classList.add('search-result__image');
       name.classList.add('search-result__name');
 
-      // Re-append to ensure correct DOM structure if constructed
       if (!frag.querySelector('.search-result')) {
         const li = root;
         li.appendChild(link);
@@ -136,7 +125,6 @@ const initSearchbar = (): void => {
       return frag;
     }
 
-    // Manual fallback if no template in DOM
     const li = document.createElement('li');
     li.className = 'search-result';
 
@@ -157,7 +145,6 @@ const initSearchbar = (): void => {
     const priceEl = document.createElement('span');
     priceEl.className = 'search-result__price';
     const priceText = getPriceText(p);
-
     if (priceText) {
       priceEl.textContent = String(priceText);
     }
@@ -183,36 +170,25 @@ const initSearchbar = (): void => {
       searchDropdown.classList.remove('d-none');
       bindOutsideClick();
     } else {
-      hideDropdown();
+      hideDropdown(); // do not remove backdrop here
     }
   };
 
   if (searchWidget && searchInput && searchResults && searchDropdown) {
-    // Always hide popup when field is empty
-    const hideIfEmpty = (): void => {
-      if (!searchInput?.value || !searchInput.value.trim()) {
-        hideDropdown();
-      }
-    };
+    // Do NOT hide backdrop on focus/empty; only hide dropdown when empty
+    searchInput.addEventListener('search', (() => {
+      if (!searchInput?.value || !searchInput.value.trim()) hideDropdown();
+    }) as EventListener);
 
-    // Hide on focus if empty (prevents showing stale results)
-    searchInput.addEventListener('focus', hideIfEmpty);
-
-    // Hide on "search" event (triggered by native clear X in some browsers)
-    searchInput.addEventListener('search', hideIfEmpty as EventListener);
-
-    // Hide on Escape
+    // Esc only hides dropdown, backdrop remains until cancel is pressed
     searchInput.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape') hideDropdown();
     });
 
-    // Reactive updates with debounce and request guard
     searchInput.addEventListener('input', () => {
       if (!searchUrl) return;
 
       const q = searchInput.value || '';
-
-      // Empty query: clear dropdown
       if (!q.trim()) {
         if (debounceId) window.clearTimeout(debounceId);
         renderResults([]);
@@ -224,13 +200,9 @@ const initSearchbar = (): void => {
         const requestId = ++lastRequestId;
         try {
           const products: Result[] = await searchProduct(searchUrl, q, 4);
-
-          // Ignore stale responses
           if (requestId !== lastRequestId) return;
           renderResults(Array.isArray(products) ? products : []);
-        } catch (err) {
-          // On any error, hide dropdown rather than breaking UI
-          console.warn('Search error:', err);
+        } catch {
           if (requestId === lastRequestId) {
             renderResults([]);
           }
