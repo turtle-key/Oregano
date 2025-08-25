@@ -15,10 +15,6 @@ const initSearchbar = (): void => {
 
   const cancelBtn = searchCanvas?.querySelector<HTMLElement>('[data-bs-dismiss="offcanvas"]') || null;
 
-  // Bootstrap Offcanvas helper
-  const Offcanvas = (window as any).bootstrap?.Offcanvas;
-  const getCanvas = () => (Offcanvas && searchCanvas ? Offcanvas.getOrCreateInstance(searchCanvas) : null);
-
   // Header trigger(s) that toggle this offcanvas (icon in the header)
   const headerTriggers = Array.from(
     document.querySelectorAll<HTMLElement>(
@@ -61,15 +57,7 @@ const initSearchbar = (): void => {
 
   // Action that mimics pressing the Cancel button (Shop.Theme.Global cancel)
   const closeViaCancelAction = (): void => {
-    if (cancelBtn) {
-      cancelBtn.click(); // let Bootstrap handle dismissal the same way as the real cancel
-    } else {
-      try {
-        getCanvas()?.hide();
-      } catch {
-        // no-op
-      }
-    }
+    cancelBtn?.click(); // let Bootstrap handle dismissal the same way as the real cancel
   };
 
   // Focus input when clicking anywhere in the widget
