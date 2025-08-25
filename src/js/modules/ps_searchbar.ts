@@ -21,21 +21,46 @@ const initSearchbar = (): void => {
     searchDropdown.classList.add('d-none');
   };
 
+  const focusSearchAtEnd = (): void => {
+    if (!searchInput) return;
+    const len = (searchInput.value || '').length;
+    // Defer to ensure offcanvas is fully painted
+    requestAnimationFrame(() => {
+      // preventScroll keeps the page from jumping
+      try {
+        (searchInput as any).focus({ preventScroll: true });
+      } catch {
+        searchInput.focus();
+      }
+      try {
+        searchInput.setSelectionRange(len, len);
+      } catch {
+        // Fallback: move cursor by resetting value (avoids selecting text)
+        const v = searchInput.value;
+        searchInput.value = '';
+        searchInput.value = v;
+      }
+    });
+  };
+
   searchWidget?.addEventListener('click', () => {
     searchInput?.focus();
   });
 
+  // Submit only if there is input; backdrop handled separately
   searchIcon?.addEventListener('click', () => {
     if (searchInput?.value) {
       searchInput.form?.submit();
     }
   });
 
+  // Backdrop lifecycle: add on open; only Cancel removes it
   (searchCanvas as any)?.addEventListener('shown.bs.offcanvas', () => {
     document.body.classList.add('is-search-open');
+    focusSearchAtEnd(); // Accessibility: autofocus with caret at the end
   });
 
-  // Only the cancel button hides the backdrop
+  // Only the Cancel button hides the backdrop
   cancelBtn?.addEventListener('click', () => {
     document.body.classList.remove('is-search-open');
     hideDropdown();
@@ -48,7 +73,7 @@ const initSearchbar = (): void => {
     window.addEventListener('click', (e: Event) => {
       const t = e.target as Node | null;
       if (t && searchWidget && !searchWidget.contains(t)) {
-        hideDropdown(); // do not touch backdrop here
+        hideDropdown(); // do not remove backdrop here
       }
     });
   };
@@ -170,7 +195,7 @@ const initSearchbar = (): void => {
       searchDropdown.classList.remove('d-none');
       bindOutsideClick();
     } else {
-      hideDropdown(); // do not remove backdrop here
+      hideDropdown(); // backdrop remains
     }
   };
 
@@ -180,7 +205,7 @@ const initSearchbar = (): void => {
       if (!searchInput?.value || !searchInput.value.trim()) hideDropdown();
     }) as EventListener);
 
-    // Esc only hides dropdown, backdrop remains until cancel is pressed
+    // Esc only hides dropdown; backdrop remains until Cancel is pressed
     searchInput.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape') hideDropdown();
     });
