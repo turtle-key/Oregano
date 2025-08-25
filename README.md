@@ -11,18 +11,18 @@ It is designed for PrestaShop `9.0.x`, so please make sure you are using that br
 
 ## How to Build Assets
 
-Building assets is the same as for the PrestaShop project. You need at least **NodeJS 20.x** and **NPM 8** installed.
+Same as the PrestaShop project, you need at least **NodeJS 20.x** and **NPM 8** in order to build the project.
 
-1. Install dependencies:
-```bash
-npm ci
-```
-3. Create a `.env` file inside the `webpack` folder by copying `webpack/.env-example` and fill in your environment settings. Please use a free TCP port.
+First you need to install every node module:
 
-4. Build assets:
-```bash
-npm run build
-```
+`npm ci`
+
+then create a `.env` file inside the *webpack* folder by copying `webpack/.env-example` and complete it with your environment's informations. Please use a free tcp port.
+
+then build assets:
+
+`npm run build`
+
 ---
 
 ## Contributing
