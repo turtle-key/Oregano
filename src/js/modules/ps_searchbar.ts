@@ -4,7 +4,6 @@
  */
 
 import {searchProduct, Result} from '@services/search';
-import debounce from '@helpers/debounce';
 
 const initSearchbar = () => {
   const {Theme} = window;
@@ -41,7 +40,7 @@ const initSearchbar = () => {
   });
 
   if (searchWidget && searchInput && searchResults && searchDropdown) {
-    searchInput.addEventListener('keydown', debounce(async () => {
+    searchInput.addEventListener('keydown', async () => {
       if (searchUrl) {
         const products = await searchProduct(searchUrl, searchInput.value, 10);
 
@@ -82,7 +81,7 @@ const initSearchbar = () => {
           searchDropdown.classList.add('d-none');
         }
       }
-    }, 250));
+    });
   }
 };
 
