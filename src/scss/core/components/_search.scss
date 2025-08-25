@@ -196,7 +196,9 @@ $component-name: search;
     }
   }
 }
-
+.search__offcanvas, .offcanvas-top {
+  margin-top: var(--header-height, 64px);
+}
 /* Backdrop: keep behind dropdown/offcanvas, only hidden by Cancel button */
 body.is-search-open::before {
   content: "";

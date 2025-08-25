@@ -1,6 +1,5 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information.
  *}
 {$headerBottomName = 'header-bottom'}
 
@@ -9,7 +8,6 @@
     {hook h='displayBanner'}
   </div>
 {/block}
-
 
 {block name='header_bottom'}
   <div class="{$headerBottomName}">
@@ -32,15 +30,15 @@
           {hook h='displayTopRight'}
           <div class="search__all d-flex col-auto">
             <div class="header-block d-flex align-items-center">
-              <a class="header-block__action-btn" href="#" role="button" data-bs-toggle="offcanvas" data-bs-target="#searchCanvas" aria-controls="searchCanvas" aria-label="{l s='Show search bar' d='Shop.Theme.Global'}">
+              <a class="header-block__action-btn"
+                 href="#"
+                 role="button"
+                 data-bs-toggle="offcanvas"
+                 data-bs-target="#searchCanvas"
+                 aria-controls="searchCanvas"
+                 aria-label="{l s='Show search bar' d='Shop.Theme.Global'}">
                 <span class="material-icons header-block__icon">search</span>
               </a>
-            </div>
-            <div class="search__offcanvas js-search-offcanvas offcanvas offcanvas-top h-auto" data-bs-backdrop="false" data-bs-scroll="true" tabindex="-1" id="searchCanvas" aria-labelledby="offcanvasTopLabel">
-              <div class="offcanvas-header">
-                {hook h='displaySearch'}
-                <button type="button" class="btn-close text-reset ms-1" data-bs-dismiss="offcanvas" aria-label="Close">{l s='Cancel' d='Shop.Theme.Global'}</button>
-              </div>
             </div>
           </div>
 
@@ -66,6 +64,24 @@
       </div>
     </div>
   </div>
+{/block}
 
-  {hook h='displayNavFullWidth'}
+{block name='header_search'}
+  <div class="search__offcanvas js-search-offcanvas offcanvas offcanvas-top w-100 h-auto"
+       id="searchCanvas"
+       tabindex="-1"
+       aria-labelledby="searchCanvasLabel"
+       data-bs-backdrop="false"
+       data-bs-scroll="true">
+    <div class="offcanvas-header">
+      <h2 id="searchCanvasLabel" class="visually-hidden">{l s='Search' d='Shop.Theme.Catalog'}</h2>
+      {hook h='displaySearch'}
+      <button type="button"
+              class="btn-close text-reset ms-1"
+              data-bs-dismiss="offcanvas"
+              aria-label="{l s='Close' d='Shop.Theme.Global'}">
+        {l s='Cancel' d='Shop.Theme.Global'}
+      </button>
+    </div>
+  </div>
 {/block}
