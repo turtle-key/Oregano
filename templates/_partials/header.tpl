@@ -46,7 +46,7 @@
 
         <div class="col d-flex justify-content-end align-items-center">
           {hook h='displayTopRight'}
-          <div class="search__mobile d-md-none d-flex col-auto">
+          <div class="search__all d-flex col-auto">
             <div class="header-block d-flex align-items-center">
               <a class="header-block__action-btn" href="#" role="button" data-bs-toggle="offcanvas" data-bs-target="#searchCanvas" aria-controls="searchCanvas" aria-label="{l s='Show search bar' d='Shop.Theme.Global'}">
                 <span class="material-icons header-block__icon">search</span>
@@ -54,7 +54,7 @@
             </div>
             <div class="search__offcanvas js-search-offcanvas offcanvas offcanvas-top h-auto" data-bs-backdrop="false" data-bs-scroll="true" tabindex="-1" id="searchCanvas" aria-labelledby="offcanvasTopLabel">
               <div class="offcanvas-header">
-                <div id="_mobile_search" class="search__container"></div>
+                {hook h='displaySearch'}
                 <button type="button" class="btn-close text-reset ms-1" data-bs-dismiss="offcanvas" aria-label="Close">{l s='Cancel' d='Shop.Theme.Global'}</button>
               </div>
             </div>
