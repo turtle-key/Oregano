@@ -27,7 +27,7 @@
         </div>
 
         <div class="col d-flex justify-content-end align-items-center">
-          {hook h='displayTopRight'}
+          
           <div class="search__all d-flex col-auto">
             <div class="header-block d-flex align-items-center">
               <a class="header-block__action-btn"
@@ -41,7 +41,7 @@
               </a>
             </div>
           </div>
-
+          {hook h='displayTopRight'}
           <div id="_mobile_user_info" class="d-md-none d-flex col-auto">
             <div class="header-block">
               <span class="header-block__action-btn">
