@@ -47,6 +47,19 @@ const initSearchbar = (): void => {
     searchDropdown.classList.add('d-none');
   };
 
+  const showDropdown = (): void => {
+    if (!searchDropdown) return;
+    searchDropdown.classList.remove('d-none');
+  };
+
+  const showLoading = (): void => {
+    if (!searchResults) return;
+    // Simple, lightweight loading state to make the popup appear immediately
+    searchResults.innerHTML = `
+      <li class="search-result search-result--loading" aria-live="polite">Searching…</li>
+    `;
+  };
+
   const removeBackdropAndDropdown = (): void => {
     document.body.classList.remove('is-search-open');
     hideDropdown();
@@ -160,6 +173,9 @@ const initSearchbar = (): void => {
 
   let debounceId: number | undefined;
   let lastRequestId = 0;
+
+  // Cache results by exact query to display something instantly while fetching
+  const resultsCache = new Map<string, Result[]>();
 
   type PriceShape = {
     price?:
@@ -314,6 +330,9 @@ const initSearchbar = (): void => {
     }
   };
 
+  const MIN_CHARS = 1;
+  const DEBOUNCE_MS = 20; // was ~180ms; reduce to show results sooner
+
   if (searchWidget && searchInput && searchResults && searchDropdown) {
     // Clear dropdown via native search event
     searchInput.addEventListener('search', () => {
@@ -325,15 +344,30 @@ const initSearchbar = (): void => {
       if (e.key === 'Escape') hideDropdown();
     });
 
+    // Show popup immediately and then fetch with a short debounce
     searchInput.addEventListener('input', () => {
       if (!searchUrl) return;
 
-      const q = searchInput.value || '';
+      const raw = searchInput.value || '';
+      const q = raw.trim();
 
-      if (!q.trim()) {
+      if (q.length < MIN_CHARS) {
         if (debounceId) window.clearTimeout(debounceId);
         renderResults([]);
         return;
+      }
+
+      // Make the dropdown appear right away
+      showDropdown();
+
+      // If we have cached results for this exact query, render them instantly
+      const cached = resultsCache.get(q);
+
+      if (cached && cached.length) {
+        renderResults(cached);
+      } else {
+        // Otherwise show a lightweight loading row
+        showLoading();
       }
 
       if (debounceId) window.clearTimeout(debounceId);
@@ -344,13 +378,27 @@ const initSearchbar = (): void => {
           const products: Result[] = await searchProduct(searchUrl, q, 4);
 
           if (requestId !== lastRequestId) return;
-          renderResults(Array.isArray(products) ? products : []);
+
+          const safe = Array.isArray(products) ? products : [];
+          resultsCache.set(q, safe);
+          if (safe.length) {
+            renderResults(safe);
+          } else {
+            // Keep the dropdown visible but empty state: reuse loading row -> switch to "No results"
+            searchResults.innerHTML = `
+                <li class="search-result search-result--empty" aria-live="polite">No results</li>
+              `;
+          }
         } catch {
           if (requestId === lastRequestId) {
-            renderResults([]);
+            if (searchResults) {
+              searchResults.innerHTML = `
+                <li class="search-result search-result--error" aria-live="polite">Could not load results</li>
+              `;
+            }
           }
         }
-      }, 180);
+      }, DEBOUNCE_MS);
     });
   }
 };
