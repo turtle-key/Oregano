@@ -17,7 +17,7 @@
   <a href="https://github.com/turtle-key/Oregano/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/turtle-key/Oregano?color=29c469&label=License" alt="License: AGPL-3" style="margin-right:4px;"/>
   </a>
-  <a href="https://github.com/turtle-key/TabLift/stargazers">
+  <a href="https://github.com/turtle-key/Oregano/stargazers">
     <img src="https://img.shields.io/github/stars/turtle-key/Oregano" alt="Stars"/>
   </a>
 </p>
