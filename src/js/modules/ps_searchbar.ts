@@ -52,8 +52,13 @@ const initSearchbar = (): void => {
     searchDropdown.classList.remove('d-none');
   };
 
+  // Whether the DOM currently shows any product items (keep these while fetching new queries)
+  const hasProductItemsInDom = (): boolean => !!searchResults?.querySelector('.search-result__link');
+
   const showLoading = (): void => {
     if (!searchResults) return;
+    // Only show "Searching…" when there are no products currently displayed
+    if (hasProductItemsInDom()) return;
     // Simple, lightweight loading state to make the popup appear immediately
     searchResults.innerHTML = `
       <li class="search-result search-result--loading" aria-live="polite">Searching…</li>
@@ -365,9 +370,11 @@ const initSearchbar = (): void => {
 
       if (cached && cached.length) {
         renderResults(cached);
-      } else {
-        // Otherwise show a lightweight loading row
-        showLoading();
+      } else if (searchResults) {
+        // Only show a lightweight loading row if there are no existing products visible
+        if (!hasProductItemsInDom()) {
+          showLoading();
+        }
       }
 
       if (debounceId) window.clearTimeout(debounceId);
