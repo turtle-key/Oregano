@@ -18,7 +18,7 @@
     <img src="https://img.shields.io/github/license/turtle-key/Oregano?color=29c469&label=License" alt="License: AGPL-3" style="margin-right:4px;"/>
   </a>
   <a href="https://github.com/turtle-key/TabLift/stargazers">
-    <img src="https://img.shields.io/github/stars/turtle-key/TabLift" alt="Stars"/>
+    <img src="https://img.shields.io/github/stars/turtle-key/Oregano" alt="Stars"/>
   </a>
 </p>
 Oregano is a custom PrestaShop theme based on the [default PrestaShop theme](https://github.com/PrestaShop/hummingbird).  
