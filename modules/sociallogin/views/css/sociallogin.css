@@ -1,0 +1,99 @@
+/* Social Login buttons (Hummingbird-compatible) */
+
+.sl-auth { margin-top: 1rem; }
+.sl-auth__divider {
+  position: relative;
+  text-align: center;
+  color: var(--gray-700, #495057);
+  font-size: .875rem;
+  margin: .5rem 0 1rem;
+}
+.sl-auth__divider::before,
+.sl-auth__divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: var(--gray-300, #dee2e6);
+}
+.sl-auth__divider::before { left: 0; }
+.sl-auth__divider::after { right: 0; }
+
+.sl-auth__buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .5rem;
+}
+
+.sl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  justify-content: center;
+  width: 100%;
+  min-height: 42px;
+  padding: .625rem .875rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, border-color .12s ease;
+  will-change: transform, box-shadow;
+}
+
+.sl-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+}
+
+/* Apple */
+.sl-btn--apple {
+  color: #fff;
+  background: #000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
+}
+.sl-btn--apple:hover {
+  background: #111;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .3);
+}
+.sl-btn--apple:active { transform: translateY(0); }
+
+/* Google */
+.sl-btn--google {
+  color: #1f2937;
+  background: #fff;
+  border-color: var(--gray-300, #e5e7eb);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+}
+.sl-btn--google:hover {
+  background: #fff;
+  border-color: var(--gray-400, #d1d5db);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .10);
+}
+.sl-btn--google:active { transform: translateY(0); }
+
+/* Facebook */
+.sl-btn--facebook {
+  color: #fff;
+  background: #1877F2;
+  box-shadow: 0 2px 10px rgba(24, 119, 242, .20);
+}
+.sl-btn--facebook:hover {
+  background: #166FE5;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(24, 119, 242, .24);
+}
+.sl-btn--facebook:active { transform: translateY(0); }
+
+.sl-auth--checkout .sl-auth__divider { margin-top: 0; }
+
+/* When in Sign in pane, tighten spacing */
+.sl-auth--in-signin { margin-top: .75rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-btn { transition: none !important; }
+}

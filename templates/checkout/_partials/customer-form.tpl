@@ -17,6 +17,7 @@
       </div>
       <div class="js-password-form__input-wrapper d-none mt-3">
         {$smarty.block.parent}
+        {hook h='displayCustomerAccountForm'}
       </div>
     </div>
   {else}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Facebook Login setup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.55;margin:0;}
+    .wrap{padding:24px;max-width:900px;margin:0 auto;}
+    h1{font-size:1.25rem;margin:.25rem 0 1rem;}
+    ol{padding-left:20px;}
+    code,kbd{background:#f3f5f7;border:1px solid #e7eaf3;border-radius:4px;padding:2px 6px;}
+    .tip{background:#f6ffed;border:1px solid #b7eb8f;border-radius:8px;padding:10px 12px;margin:12px 0;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Facebook Login setup</h1>
+  <ol>
+    <li>Open <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener">Facebook Developers</a> and create an App.</li>
+    <li>Add product “Facebook Login” and choose “Web”.</li>
+    <li>In <strong>Settings &gt; Basic</strong>, copy the <em>App ID</em> and <em>App Secret</em> into the module.</li>
+    <li>In <strong>Facebook Login &gt; Settings</strong> add the Valid OAuth Redirect URL shown on the sociallogin module page.</li>
+    <li>Put the App in <strong>Live</strong> mode after testing (you may need to verify the app).</li>
+  </ol>
+  <p><strong>Notes</strong></p>
+  <ul>
+    <li>Email permission is standard; users without public email will be assigned a surrogate email in your shop.</li>
+    <li>Ensure your site uses HTTPS.</li>
+  </ul>
+</div>
+</body>
+</html>

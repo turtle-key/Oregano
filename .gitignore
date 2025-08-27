@@ -1,5 +1,5 @@
 # Cache, temp and personal files
-
+.DS_Store
 /.htaccess
 *.log
 /assets
@@ -114,7 +114,6 @@ app/config/config.php
 
 # Themes, modules and overrides
 
-modules/*
 override/*
 themes/*/
 !themes/classic

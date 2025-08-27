@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sign in with Apple setup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.55;margin:0;}
+    .wrap{padding:24px;max-width:900px;margin:0 auto;}
+    h1{font-size:1.25rem;margin:.25rem 0 1rem;}
+    ol{padding-left:20px;}
+    code,kbd{background:#f3f5f7;border:1px solid #e7eaf3;border-radius:4px;padding:2px 6px;}
+    .tip{background:#fffbe6;border:1px solid #ffe58f;border-radius:8px;padding:10px 12px;margin:12px 0;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Sign in with Apple setup</h1>
+  <ol>
+    <li>Go to <a href="https://developer.apple.com/account/resources/identifiers/list/serviceId" target="_blank" rel="noopener">Apple Developer &gt; Identifiers</a> and create a <strong>Service ID</strong> for Sign in with Apple.</li>
+    <li>Enable <strong>Sign In with Apple</strong> on that Service ID, then configure:
+      <ul>
+        <li><strong>Primary App ID</strong> (your app’s identifier)</li>
+        <li><strong>Web Domain</strong> (your shop domain)</li>
+        <li><strong>Return URLs</strong> (add the module redirect URI shown on the sociallogin module page)</li>
+      </ul>
+    </li>
+    <li>Create a <strong>Key</strong> for Sign in with Apple and download the <code>.p8</code> private key (save it securely).</li>
+    <li>Copy into the module:
+      <ul>
+        <li><em>Service ID</em> (client_id)</li>
+        <li><em>Team ID</em></li>
+        <li><em>Key ID</em></li>
+        <li><em>Private Key</em> (paste the full .p8 contents)</li>
+      </ul>
+    </li>
+  </ol>
+  <div class="tip">
+    Apple requires a public HTTPS domain. For local testing, use a tunneling URL (e.g. ngrok) and add it as a return URL.
+  </div>
+  <p><strong>Privacy note:</strong> Users may choose “Hide My Email”. The module will create an account with the private relay address Apple returns.</p>
+</div>
+</body>
+</html>
