@@ -19,12 +19,6 @@
         {render file='customer/_partials/login-form.tpl' ui=$login_form}
       </section>
       
-      <hr/>
-
-      {block name='display_after_login_form'}
-        {hook h='displayCustomerLoginFormAfter'}
-      {/block}
-
       <div class="{$componentName}__register-prompt">
         <h2 class="h4 mb-3">{l s='No account?' d='Shop.Theme.Customeraccount'}</h2>
 

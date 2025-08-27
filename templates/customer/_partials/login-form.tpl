@@ -34,6 +34,8 @@
         {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
       </a>
     </div>
-
+    {block name='display_after_login_form'}
+        {hook h='displayCustomerLoginFormAfter'}
+    {/block}
   </form>
 {/block}

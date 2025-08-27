@@ -15,6 +15,7 @@
     {$hook_create_account_top nofilter}
     <section class="register-form">
       {render file='customer/_partials/customer-form.tpl' ui=$register_form mode='register'}
+      {hook h='displayCustomerAccountForm'}
       <hr>
       <p class="register-form__login-prompt">{l s='Already have an account?' d='Shop.Theme.Customeraccount'} <a href="{$urls.pages.authentication}">{l s='Sign in' d='Shop.Theme.Customeraccount'}</a></p>
     </section>

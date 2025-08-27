@@ -21,7 +21,6 @@
           {/if}
         {/block}
       {/foreach}
-      {$hook_create_account_form nofilter}
     {/block}
   </section>
 
