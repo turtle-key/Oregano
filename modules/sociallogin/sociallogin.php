@@ -281,6 +281,8 @@ class Sociallogin extends Module
             'sl_facebook_link'   => $this->context->link->getModuleLink($this->name, 'facebook', ['back' => $backUrl], true),
             'sl_google_link'     => $this->context->link->getModuleLink($this->name, 'google',   ['back' => $backUrl], true),
             'sl_apple_link'      => $this->context->link->getModuleLink($this->name, 'apple',    ['back' => $backUrl], true),
+            // NEW: base path for images (modules/sociallogin/views/img/)
+            'sl_img_dir'         => $this->_path . 'views/img/',
         ]);
 
         return $this->display(__FILE__, 'views/templates/hook/loginButtons.tpl');
