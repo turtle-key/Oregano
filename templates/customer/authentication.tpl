@@ -19,7 +19,7 @@
         {render file='customer/_partials/login-form.tpl' ui=$login_form}
       </section>
       
-      <div class="{$componentName}__register-prompt">
+      <div class="{$componentName}__register-prompt mt-4">
         <h2 class="h4 mb-3">{l s='No account?' d='Shop.Theme.Customeraccount'}</h2>
 
         <div class="d-grid">
